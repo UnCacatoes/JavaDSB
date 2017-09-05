@@ -13,7 +13,7 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 jar {
-    baseName = 'gs-spring-boot'
+    baseName = 'DiscordSoundBoard'
     version =  '0.1.0'
 }
 
@@ -35,3 +35,8 @@ dependencies {
     compile("com.github.austinv11:Discord4j:+")
 }
 
+idea{
+    module{
+        name = 'DiscordSoundBoard'
+    }
+}

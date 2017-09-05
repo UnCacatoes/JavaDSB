@@ -1,12 +1,12 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-/tmp
-/out-tsc
-/dist
+/frontend/tmp
+/frontend/out-tsc
+/frontend/dist
 
 # dependencies
-/node_modules
+/frontend/node_modules
 
 # IDEs and editors
 /.idea
