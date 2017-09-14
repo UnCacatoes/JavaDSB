@@ -1,4 +1,4 @@
-package hello;
+package com.discord.soundboard.bot;
 
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
