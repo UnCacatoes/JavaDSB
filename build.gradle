@@ -23,16 +23,20 @@ repositories {
     maven {
         url  "https://jitpack.io"
     }
+    maven {
+        url "https://repo.spring.io/libs-release"
+    }
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    compile("com.github.austinv11:Discord4j:+")
+    compile "org.springframework.data:spring-data-mongodb:1.10.7.RELEASE"
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "com.github.austinv11:Discord4j:+"
+    testCompile "org.springframework.boot:spring-boot-starter-test"
 }
 
 idea{

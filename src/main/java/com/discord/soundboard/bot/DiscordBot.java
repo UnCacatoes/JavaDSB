@@ -1,6 +1,5 @@
 package com.discord.soundboard.bot;
 
-import sun.audio.AudioPlayer;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.IListener;
@@ -10,8 +9,10 @@ import sx.blah.discord.handle.impl.obj.Message;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.util.audio.AudioPlayer;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -74,7 +75,7 @@ public class DiscordBot implements IListener<Event> {
 
         // Find a song given the search term
         File[] songDir = new File("music")
-                .listFiles(file -> file.getName().contains(searchStr));
+                .listFiles(file -> file.getName().contains(song));
 
         if(songDir == null || songDir.length == 0)
             return;
@@ -86,11 +87,11 @@ public class DiscordBot implements IListener<Event> {
         try {
             audioP.queue(songDir[0]);
         } catch (IOException | UnsupportedAudioFileException e) {
-            BotUtils.sendMessage(event.getChannel(), "There was an issue playing that song.");
+            sendMessage("There was an issue playing that song.");
             e.printStackTrace();
         }
 
-        BotUtils.sendMessage(event.getChannel(), "Now playing: " + songDir[0].getName());
+        sendMessage("Now playing: " + songDir[0].getName());
     }
 
     private void sendMessage(String s) {

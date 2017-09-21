@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 
 @RestController
+@RequestMapping("/api")
 public class ApiController {
 
     private static DiscordBot bot;
@@ -22,18 +23,18 @@ public class ApiController {
         return "Welcome to the API root !";
     }
 
-    @RequestMapping("/api/play")
+    @RequestMapping("/play")
     public String play(@RequestParam(value="song") String song ) {
         bot.playSong(song);
         return "Song : " + song + " played !";
     }
 
-    @RequestMapping("/api/songs")
+    @RequestMapping("/songs")
     public ArrayList<String> songs(){
         return SongManager.getSongsAsStrings();
     }
 
-    @PostMapping("/api/songs")
+    @PostMapping("/songs")
     public void uploadSong(){
     }
 
