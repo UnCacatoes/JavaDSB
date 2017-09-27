@@ -14,51 +14,29 @@ import sx.blah.discord.util.audio.AudioPlayer;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class DiscordBot implements IListener<Event> {
 
+    private static DiscordBot bot;
     private IDiscordClient client;
     private IGuild activeGuild;
     private IChannel activeChannel;
     private IVoiceChannel activeVoiceChannel;
 
-    public DiscordBot(){
-        String token = "MzI2MTE2NzQ2MzcxMTM3NTM4.DJAfGg.6G6jg69dhVWBYP7_j6zkepos9aE";
+    private DiscordBot(){
+        String token = Configuration.getConfiguration().getToken();
         client = DiscordClient.createClient(token, true);
         client.getDispatcher().registerListener(this);
     }
 
-    @Override
-    public void handle(Event event) {
-        if(event instanceof ReadyEvent) {
-            System.out.println("Client is ready !");
+    public static DiscordBot getBot() {
+        if(bot == null){
+            bot = new DiscordBot();
         }
-        else if(event instanceof MessageEvent){
-            Message message = (Message)((MessageEvent) event).getMessage();
-            if (message.getMentions().contains(this.client.getOurUser())){
-                this.commandHandler(message);
-            }
-        }
-    }
-
-    private void commandHandler(Message message) {
-        List<String> arr = Arrays.asList(message.getContent().toLowerCase().split(" "));
-        String command = arr.get(1);
-        List<String> args = arr.subList(2, arr.size());
-
-        if(command.equals("join")){
-            this.activeGuild = message.getGuild();
-            this.activeVoiceChannel = message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel();
-            this.activeVoiceChannel.join();
-        }
-        else if(command.equals("list")){
-
-        }
-        else if(command.equals("stop") || command.equals("quit") || command.equals("leave")){
-            message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel().leave();
-        }
+        return bot;
     }
 
     public void playSong(String song){
@@ -94,7 +72,65 @@ public class DiscordBot implements IListener<Event> {
         sendMessage("Now playing: " + songDir[0].getName());
     }
 
+    public static ArrayList<String> getSongsAsStrings(){
+        File file = new File(Configuration.getConfiguration().getSoundsPath());
+        ArrayList<String> songs = new ArrayList<String>();
+        for(File song:file.listFiles()){
+            songs.add(song.getName());
+        }
+        return songs;
+    }
+
+    public static File[] getSongs(){
+        File file = new File(Configuration.getConfiguration().getSoundsPath());
+        return file.listFiles();
+    }
+
+    public static File getFileFromString(String name) {
+        File file = new File(Configuration.getConfiguration().getSoundsPath());
+        for (File song : file.listFiles()) {
+            if (song.getName().equals(name)) {
+                return song;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void handle(Event event) {
+        if(event instanceof ReadyEvent) {
+            System.out.println("Client is ready !");
+        }
+        else if(event instanceof MessageEvent){
+            Message message = (Message)((MessageEvent) event).getMessage();
+            if (message.getMentions().contains(this.client.getOurUser())){
+                this.commandHandler(message);
+            }
+        }
+    }
+
+    private void commandHandler(Message message) {
+        List<String> arr = Arrays.asList(message.getContent().toLowerCase().split(" "));
+        String command = arr.get(1);
+        List<String> args = arr.subList(2, arr.size());
+
+        if(command.equals("join")){
+            this.activeGuild = message.getGuild();
+            this.activeVoiceChannel = message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel();
+            this.activeVoiceChannel.join();
+        }
+        else if(command.equals("list")){
+
+        }
+        else if(command.equals("stop") || command.equals("quit") || command.equals("leave")){
+            message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel().leave();
+        }
+    }
+
+
     private void sendMessage(String s) {
         this.activeChannel.sendMessage(s);
     }
+
+
 }

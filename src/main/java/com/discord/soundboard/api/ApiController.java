@@ -11,12 +11,6 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-
-    private static DiscordBot bot;
-
-    public static void setDiscordBot(DiscordBot _bot){
-        bot = _bot;
-    }
     
     @RequestMapping("/")
     public String index() {
@@ -25,13 +19,13 @@ public class ApiController {
 
     @RequestMapping("/play")
     public String play(@RequestParam(value="song") String song ) {
-        bot.playSong(song);
+        DiscordBot.getBot().playSong(song);
         return "Song : " + song + " played !";
     }
 
     @RequestMapping("/songs")
     public ArrayList<String> songs(){
-        return SongManager.getSongsAsStrings();
+        return DiscordBot.getBot().getSongsAsStrings();
     }
 
     @PostMapping("/songs")
