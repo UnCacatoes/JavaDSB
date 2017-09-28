@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DiscordSoundBoard.iml" filepath="$PROJECT_DIR$/.idea/modules/DiscordSoundBoard.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DiscordSoundBoard_main.iml" filepath="$PROJECT_DIR$/.idea/modules/DiscordSoundBoard_main.iml" group="DiscordSoundBoard" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/DiscordSoundBoard_test.iml" filepath="$PROJECT_DIR$/.idea/modules/DiscordSoundBoard_test.iml" group="DiscordSoundBoard" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/frontend/frontend.iml" filepath="$PROJECT_DIR$/.idea/modules/frontend/frontend.iml" group="frontend" />
     </modules>
   </component>
 </project>

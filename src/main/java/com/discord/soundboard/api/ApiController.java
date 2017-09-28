@@ -19,8 +19,7 @@ public class ApiController {
 
     @RequestMapping("/play")
     public String play(@RequestParam(value="song") String song ) {
-        DiscordBot.getBot().playSong(song);
-        return "Song : " + song + " played !";
+        return DiscordBot.getBot().playSong(song);
     }
 
     @RequestMapping("/songs")

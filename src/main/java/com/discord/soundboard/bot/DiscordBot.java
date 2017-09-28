@@ -22,9 +22,6 @@ public class DiscordBot implements IListener<Event> {
 
     private static DiscordBot bot;
     private IDiscordClient client;
-    private IGuild activeGuild;
-    private IChannel activeChannel;
-    private IVoiceChannel activeVoiceChannel;
 
     private DiscordBot(){
         String token = Configuration.getConfiguration().getToken();
@@ -39,24 +36,21 @@ public class DiscordBot implements IListener<Event> {
         return bot;
     }
 
-    public void playSong(String song){
-
-        IVoiceChannel botVoiceChannel = client.getVoiceChannels().get(0);
-
-        if(botVoiceChannel == null) {
-            this.sendMessage("Not in a voice channel, join one and then use joinvoice");
-            return;
+    public String playSong(String song){
+        if(this.getActiveVoiceChannel()==null) {
+            this.sendMessage("Not in a voice channel, use '@SoundBoard join'");
+            return "Not in a voice channel, use '@SoundBoard join'";
         }
 
         // Get the AudioPlayer object for the guild
-        AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(this.activeGuild);
+        AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(this.getActiveGuild());
 
         // Find a song given the search term
-        File[] songDir = new File("music")
+        File[] songDir = getSongsDir()
                 .listFiles(file -> file.getName().contains(song));
 
         if(songDir == null || songDir.length == 0)
-            return;
+            return "Could not find song";
 
         // Stop the playing track
         audioP.clear();
@@ -65,15 +59,15 @@ public class DiscordBot implements IListener<Event> {
         try {
             audioP.queue(songDir[0]);
         } catch (IOException | UnsupportedAudioFileException e) {
-            sendMessage("There was an issue playing that song.");
+            this.sendMessage("There was an issue playing that song.");
             e.printStackTrace();
         }
 
-        sendMessage("Now playing: " + songDir[0].getName());
+        return "Now playing: " + songDir[0].getName();
     }
 
-    public static ArrayList<String> getSongsAsStrings(){
-        File file = new File(Configuration.getConfiguration().getSoundsPath());
+    public ArrayList<String> getSongsAsStrings(){
+        File file = getSongsDir();
         ArrayList<String> songs = new ArrayList<String>();
         for(File song:file.listFiles()){
             songs.add(song.getName());
@@ -81,19 +75,48 @@ public class DiscordBot implements IListener<Event> {
         return songs;
     }
 
-    public static File[] getSongs(){
-        File file = new File(Configuration.getConfiguration().getSoundsPath());
+    public File[] getSongs(){
+        File file = getSongsDir();
         return file.listFiles();
     }
 
-    public static File getFileFromString(String name) {
-        File file = new File(Configuration.getConfiguration().getSoundsPath());
+    public File getFileFromString(String name) {
+        File file = getSongsDir();
         for (File song : file.listFiles()) {
             if (song.getName().equals(name)) {
                 return song;
             }
         }
         return null;
+    }
+
+    public IGuild getActiveGuild(){
+        if(client.getGuilds().isEmpty()){
+            return null;
+        }
+        return client.getGuilds().get(0);
+    }
+
+    public IVoiceChannel getActiveVoiceChannel(){
+        if(client.getConnectedVoiceChannels().isEmpty()){
+            return null;
+        }
+        return client.getConnectedVoiceChannels().get(0);
+    }
+
+    public IChannel getDefaultChannel(){
+        if(this.getActiveGuild()==null){
+            return null;
+        }
+        return this.getActiveGuild().getDefaultChannel();
+    }
+
+    private File getSongsDir(){
+        File file = new File(Configuration.getConfiguration().getSoundsPath());
+        if(!file.exists()){
+            file.mkdir();
+        }
+        return file;
     }
 
     @Override
@@ -115,9 +138,7 @@ public class DiscordBot implements IListener<Event> {
         List<String> args = arr.subList(2, arr.size());
 
         if(command.equals("join")){
-            this.activeGuild = message.getGuild();
-            this.activeVoiceChannel = message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel();
-            this.activeVoiceChannel.join();
+            message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel().join();
         }
         else if(command.equals("list")){
 
@@ -129,7 +150,7 @@ public class DiscordBot implements IListener<Event> {
 
 
     private void sendMessage(String s) {
-        this.activeChannel.sendMessage(s);
+        this.client.getGuilds().get(0).getDefaultChannel().sendMessage(s);
     }
 
 
