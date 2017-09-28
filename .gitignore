@@ -44,3 +44,9 @@ Thumbs.db
 
 # Project specific
 /songs
+/.gradle
+JavaDSB.ipr
+JavaDSB.iws
+/build
+/frontend/package-lock.json
+DiscordSoundBoard.iml
