@@ -1,4 +1,4 @@
-package com.discord.soundboard.bot;
+package com.discord.soundboard.service;
 
 import com.google.gson.Gson;
 

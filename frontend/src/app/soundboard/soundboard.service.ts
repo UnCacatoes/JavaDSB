@@ -8,10 +8,10 @@ export class SoundboardService {
   constructor(private http: Http) { }
 
   getSounds (){
-    return this.http.get('http://localhost:8000/api/songs').map(res => res.json());
+    return this.http.get('http://localhost:8080/api/songs').map(res => res.json());
   }
 
   playSound(sound){
-    return this.http.get('http://localhost:8000/api/play/' + sound);
+    return this.http.get('http://localhost:8080/api/play/' + sound);
   }
 }

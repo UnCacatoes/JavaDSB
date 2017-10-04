@@ -1,7 +1,6 @@
 package com.discord.soundboard;
 
-import com.discord.soundboard.api.ApiController;
-import com.discord.soundboard.bot.DiscordBot;
+import com.discord.soundboard.service.DiscordBot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,7 +9,6 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        DiscordBot.getBot();
     }
 
 }

@@ -1,5 +1,6 @@
-package com.discord.soundboard.bot;
+package com.discord.soundboard.service;
 
+import org.springframework.stereotype.Service;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.Event;
 import sx.blah.discord.api.events.IListener;
@@ -8,6 +9,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
 import sx.blah.discord.handle.impl.obj.Message;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.audio.AudioPlayer;
 
@@ -18,22 +20,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Service
 public class DiscordBot implements IListener<Event> {
 
-    private static DiscordBot bot;
     private IDiscordClient client;
 
-    private DiscordBot(){
+    public DiscordBot(){
         String token = Configuration.getConfiguration().getToken();
         client = DiscordClient.createClient(token, true);
         client.getDispatcher().registerListener(this);
-    }
-
-    public static DiscordBot getBot() {
-        if(bot == null){
-            bot = new DiscordBot();
-        }
-        return bot;
     }
 
     public String playSong(String song){
@@ -46,8 +41,7 @@ public class DiscordBot implements IListener<Event> {
         AudioPlayer audioP = AudioPlayer.getAudioPlayerForGuild(this.getActiveGuild());
 
         // Find a song given the search term
-        File[] songDir = getSongsDir()
-                .listFiles(file -> file.getName().contains(song));
+        File[] songDir = getSongsDir().listFiles(file -> file.getName().contains(song));
 
         if(songDir == null || songDir.length == 0)
             return "Could not find song";
@@ -58,12 +52,12 @@ public class DiscordBot implements IListener<Event> {
         // Play the found song
         try {
             audioP.queue(songDir[0]);
+            return "Now playing: " + songDir[0].getName();
         } catch (IOException | UnsupportedAudioFileException e) {
-            this.sendMessage("There was an issue playing that song.");
+            this.sendMessage("There was an issue playing that song");
             e.printStackTrace();
+            return "There was an issue playing that song";
         }
-
-        return "Now playing: " + songDir[0].getName();
     }
 
     public ArrayList<String> getSongsAsStrings(){
@@ -126,7 +120,7 @@ public class DiscordBot implements IListener<Event> {
         }
         else if(event instanceof MessageEvent){
             Message message = (Message)((MessageEvent) event).getMessage();
-            if (message.getMentions().contains(this.client.getOurUser())){
+            if (message.getMentions()!=null && message.getMentions().contains(this.client.getOurUser())){
                 this.commandHandler(message);
             }
         }
@@ -138,7 +132,12 @@ public class DiscordBot implements IListener<Event> {
         List<String> args = arr.subList(2, arr.size());
 
         if(command.equals("join")){
-            message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel().join();
+            if(message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel() != null){
+                message.getAuthor().getVoiceStateForGuild(message.getGuild()).getChannel().join();
+            }
+            else{
+                sendMessage("User '" + message.getAuthor().getName() + "' is not in a voice channel");
+            }
         }
         else if(command.equals("list")){
 
@@ -152,6 +151,4 @@ public class DiscordBot implements IListener<Event> {
     private void sendMessage(String s) {
         this.client.getGuilds().get(0).getDefaultChannel().sendMessage(s);
     }
-
-
 }
